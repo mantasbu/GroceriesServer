@@ -6,7 +6,7 @@ plugins {
     application
     kotlin("jvm") version "1.7.22"
     id("io.ktor.plugin") version "2.1.3"
-                id("org.jetbrains.kotlin.plugin.serialization") version "1.7.22"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.22"
 }
 
 group = "com.kotlisoft"
@@ -33,6 +33,7 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("it.skrape:skrapeit:1.2.2")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
