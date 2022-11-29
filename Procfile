@@ -1,0 +1,1 @@
+web: build/install/com.kotlisoft.groceries/bin/com.kotlisoft.groceries
