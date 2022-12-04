@@ -24,6 +24,12 @@ fun Application.configureRouting() {
     }
 
     routing {
+        get("/vars") {
+            call.respondText(System.getenv("MY_VAR"))
+        }
+    }
+
+    routing {
         get("/notes") {
             val db = DatabaseConnection.database
             val notes = db.from(NotesEntity).select()
