@@ -4,7 +4,6 @@ import org.ktorm.database.Database
 
 object DatabaseConnection {
     val database = Database.connect(
-        url = System.getenv("DATABASE_URI"),
-        driver = System.getenv("JDBC_DRIVER")
+        url = System.getenv("DATABASE_URI")
     )
 }
