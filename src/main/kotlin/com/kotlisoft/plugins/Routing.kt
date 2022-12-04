@@ -1,6 +1,7 @@
 package com.kotlisoft.plugins
 
 import com.kotlisoft.db.DatabaseConnection
+import com.kotlisoft.db.DatabaseFactory
 import com.kotlisoft.entities.NotesEntity
 import com.kotlisoft.models.Note
 import com.kotlisoft.models.NoteRequest
@@ -24,21 +25,17 @@ fun Application.configureRouting() {
     }
 
     routing {
-        get("/vars") {
-            call.respondText(System.getenv("MY_VAR"))
-        }
-    }
-
-    routing {
         get("/notes") {
-            val db = DatabaseConnection.database
-            val notes = db.from(NotesEntity).select()
-                .map {
-                    val id = it[NotesEntity.id]
-                    val note = it[NotesEntity.note]
-                    Note(id ?: -1, note ?: "")
-                }
-            call.respond(notes)
+            //val db = DatabaseConnection.database
+//            val notes = db.from(NotesEntity).select()
+//                .map {
+//                    val id = it[NotesEntity.id]
+//                    val note = it[NotesEntity.note]
+//                    Note(id ?: -1, note ?: "")
+//                }
+//            call.respond(notes)
+            val db = DatabaseFactory.init()
+            call.respond("It worked!!")
         }
 
         post("/notes") {
