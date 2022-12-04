@@ -4,6 +4,6 @@ import org.ktorm.database.Database
 
 object DatabaseConnection {
     val database = Database.connect(
-        url = System.getenv("DATABASE_URI")
+        url = System.getenv("DATABASE_URI").plus("&sslmode=require")
     )
 }
