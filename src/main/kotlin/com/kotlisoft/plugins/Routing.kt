@@ -14,8 +14,10 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.ktorm.dsl.from
 import org.ktorm.dsl.insert
 import org.ktorm.dsl.map
@@ -47,32 +49,53 @@ fun Application.configureRouting() {
         }
 
         post("/notes") {
-            val db = DatabaseConnection.database
+
+            DatabaseFactory.init()
+
             val request = call.receive<NoteRequest>()
-            val result = db.insert(NotesEntity) {
-                set(it.note, request.note)
-                set(it.id, 4)
+
+            var statement : InsertStatement<Number>? = null
+            dbQuery {
+                statement = Notes.insert { note ->
+                    note[id] = 5
+                    note[Notes.note] = request.note
+                }
             }
 
-            if (result == 1) {
-                // Send successfully response to the client
-                call.respond(
-                    HttpStatusCode.OK,
-                    NoteResponse(
-                        success = true,
-                        data = "Values has been successfully inserted"
-                    )
+            call.respond(
+                HttpStatusCode.OK,
+                NoteResponse(
+                    success = true,
+                    data = "Values has been successfully inserted"
                 )
-            } else {
-                // Send failure response to the client
-                call.respond(
-                    HttpStatusCode.BadRequest,
-                    NoteResponse(
-                        success = false,
-                        data = "Failed to insert values."
-                    )
-                )
-            }
+            )
+
+//            val db = DatabaseConnection.database
+//            val request = call.receive<NoteRequest>()
+//            val result = db.insert(NotesEntity) {
+//                set(it.note, request.note)
+//                set(it.id, 4)
+//            }
+//
+//            if (result == 1) {
+//                // Send successfully response to the client
+//                call.respond(
+//                    HttpStatusCode.OK,
+//                    NoteResponse(
+//                        success = true,
+//                        data = "Values has been successfully inserted"
+//                    )
+//                )
+//            } else {
+//                // Send failure response to the client
+//                call.respond(
+//                    HttpStatusCode.BadRequest,
+//                    NoteResponse(
+//                        success = false,
+//                        data = "Failed to insert values."
+//                    )
+//                )
+//            }
         }
     }
 }
