@@ -43,7 +43,6 @@ dependencies {
     implementation ("org.postgresql:postgresql:$postgres_version")
 
     implementation("org.ktorm:ktorm-core:3.4.1")
-    implementation("mysql:mysql-connector-java:8.0.25")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
