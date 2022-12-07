@@ -10,7 +10,6 @@ plugins {
     kotlin("jvm") version "1.7.22"
     id("io.ktor.plugin") version "2.1.3"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.22"
-    id("com.github.johnrengelman.shadow") version "5.0.0"
 }
 
 group = "com.kotlisoft"
@@ -24,16 +23,6 @@ application {
 
 tasks.create("stage") {
     dependsOn("installDist")
-}
-
-tasks.withType<Jar> {
-    manifest {
-        attributes(
-            mapOf(
-                "Main-Class" to application.mainClassName
-            )
-        )
-    }
 }
 
 repositories {
