@@ -1,1 +1,1 @@
-web: java -jar build/libs/com.kotlisoft.groceries-all.jar
+web: build/install/com.kotlisoft.groceries/bin/com.kotlisoft.groceries
