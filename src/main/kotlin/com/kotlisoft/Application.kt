@@ -1,5 +1,6 @@
 package com.kotlisoft
 
+import com.kotlisoft.db.DatabaseFactory
 import io.ktor.server.application.*
 import com.kotlisoft.plugins.*
 
@@ -11,4 +12,5 @@ fun Application.module() {
     configureSerialization()
     configureMonitoring()
     configureRouting()
+    DatabaseFactory.init()
 }
