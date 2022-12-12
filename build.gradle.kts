@@ -40,9 +40,8 @@ dependencies {
     implementation ("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation ("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation ("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation ("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation ("org.postgresql:postgresql:$postgres_version")
-
-    implementation("org.ktorm:ktorm-core:3.4.1")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
