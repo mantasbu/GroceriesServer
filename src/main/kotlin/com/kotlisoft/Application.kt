@@ -18,18 +18,18 @@ fun Application.module() {
     configureMonitoring()
     configureRouting()
     DatabaseFactory.init()
-    launch {
-        while (true) {
-            var id = 6
-            delay(60_000)
-            var statement : InsertStatement<Number>? = null
-            DatabaseFactory.dbQuery {
-                statement = Notes.insert { note ->
-                    note[Notes.id] = id
-                    note[Notes.note] = "Max"
-                }
-            }
-            id++
-        }
-    }
+//    launch {
+//        while (true) {
+//            var id = 6
+//            delay(60_000)
+//            var statement : InsertStatement<Number>? = null
+//            DatabaseFactory.dbQuery {
+//                statement = Notes.insert { note ->
+//                    note[Notes.id] = id
+//                    note[Notes.note] = "Max"
+//                }
+//            }
+//            id++
+//        }
+//    }
 }
