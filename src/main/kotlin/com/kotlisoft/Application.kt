@@ -22,29 +22,29 @@ fun Application.module() {
     configureMonitoring()
     configureRouting()
     DatabaseFactory.init()
-    println("Established connection")
+    var noteId = 8
     launch {
-        println("Launching coroutines block")
         while (true) {
 
-            println("Inside while loop")
-
-            val initialDoc = Jsoup.connect("https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?page=1&count=48").get()
-
-            println("After initialDoc")
-
-            val totalPages = initialDoc.select(".pagination--button")
-                .select("span")
-                .attr("aria-hidden", "true")
-                .eachText()
-                .last()
+//            val initialDoc = Jsoup
+//                .connect("https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?page=1&count=48")
+//                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36")
+//                .get()
+//
+//            val totalPages = initialDoc.select(".pagination--button")
+//                .select("span")
+//                .attr("aria-hidden", "true")
+//                .eachText()
+//                .last()
 
             DatabaseFactory.dbQuery {
                 Notes.insert { note ->
-                    note[id] = 8
-                    note[Notes.note] = totalPages
+                    note[id] = noteId
+                    note[Notes.note] = noteId.toString()
                 }
             }
+
+            noteId++
 
 //            for (currentPage in 1..totalPages) {
 //                val doc = Jsoup.connect(
