@@ -10,7 +10,7 @@ object Products : Table() {
     val productWebId = varchar("product_web_id", 16)
     val name = varchar("name", 255)
     val price = float("price")
-    val discountPrice = varchar("discount_price", 16).nullable()
+    val discountPrice = varchar("discount_price", 32).nullable()
     val discountStartDate = date("discount_start_date").nullable()
     val discountEndDate = date("discount_end_date").nullable()
     val updatedAt = date("updated_at")
