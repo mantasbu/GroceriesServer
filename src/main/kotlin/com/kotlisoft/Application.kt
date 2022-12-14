@@ -20,7 +20,7 @@ fun Application.module() {
     DatabaseFactory.init()
     launch {
         while (true) {
-            val doc = Jsoup.connect("https://www.tesco.com/").timeout(0).get()
+            val doc = Jsoup.connect("https://www.google.com/").get()
             val title = doc.title()
             DatabaseFactory.dbQuery {
                 Notes.insert { note ->

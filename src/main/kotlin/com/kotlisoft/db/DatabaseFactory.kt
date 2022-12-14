@@ -18,7 +18,6 @@ object DatabaseFactory {
         config.driverClassName = System.getenv("JDBC_DRIVER")
         config.jdbcUrl = System.getenv("JDBC_DATABASE_URL")
         config.maximumPoolSize = 3
-        config.connectionTimeout = 0
         config.isAutoCommit = false
         config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
         val user = System.getenv("DB_USER")
