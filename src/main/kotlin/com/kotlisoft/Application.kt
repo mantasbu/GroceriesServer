@@ -1,7 +1,6 @@
 package com.kotlisoft
 
 import com.kotlisoft.db.DatabaseFactory
-import com.kotlisoft.entities.Notes
 import com.kotlisoft.entities.Products
 import io.ktor.server.application.*
 import com.kotlisoft.plugins.*
@@ -22,80 +21,70 @@ fun Application.module() {
     configureMonitoring()
     configureRouting()
     DatabaseFactory.init()
-    var noteId = 8
     launch {
         while (true) {
 
-//            val initialDoc = Jsoup
-//                .connect("https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?page=1&count=48")
-//                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36")
-//                .get()
-//
-//            val totalPages = initialDoc.select(".pagination--button")
-//                .select("span")
-//                .attr("aria-hidden", "true")
-//                .eachText()
-//                .last()
+            val initialDoc = Jsoup.connect("https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?page=1&count=48").get()
 
-            DatabaseFactory.dbQuery {
-                Notes.insert { note ->
-                    note[id] = noteId
-                    note[Notes.note] = noteId.toString()
+            val totalPages = initialDoc.select(".pagination--button")
+                .select("span")
+                .attr("aria-hidden", "true")
+                .eachText()
+                .last()
+                .toInt()
+
+            for (currentPage in 1..totalPages) {
+                val doc = Jsoup.connect(
+                    "https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?page=$currentPage&count=48"
+                ).get()
+
+                val productIds = doc.select(".csVOnh")
+                    .select("a")
+                    .eachAttr("href")
+                    .map { it.substringAfter("/groceries/en-GB/products/") }
+
+                productIds.forEach { productId ->
+
+                    val productDoc = Jsoup.connect(Constants.BASE_PRODUCT_URL.plus(productId)).get()
+
+                    val title = productDoc.select("h1").text().replace("Tesco ", "")
+
+                    val cost = productDoc.select(".value")
+                        .select("span")
+                        .firstOrNull {
+                            it.hasAttr("data-auto")
+                        }
+                        ?.text()
+
+                    var discountPrice = productDoc.select(".promo-content-small .offer-text")
+                        .first()
+                        ?.text()
+                        ?.substringBefore(" Clubcard")
+                        ?.substringAfter("Any ")
+
+                    if (discountPrice != null && discountPrice.contains("p")) {
+                        discountPrice = "0.".plus(discountPrice.substringBefore("p"))
+                    }
+
+                    val offerPeriod = productDoc.select(".dates").first()?.text()
+                    val offerStart = offerPeriod?.substringAfter("from ")?.substringBefore(" until")
+                    val offerEnd = offerPeriod?.substringAfter("until ")
+
+                    DatabaseFactory.dbQuery {
+                        Products.insert { product ->
+                            product[productWebId] = productId
+                            product[name] = title
+                            product[price] = cost?.toFloat() ?: 0F
+                            product[Products.discountPrice] = discountPrice
+                            product[discountStartDate] = if (offerStart != null) LocalDate.parse(offerStart, DateTimeFormatter.ofPattern("dd/MM/yyyy")) else null
+                            product[discountEndDate] = if (offerEnd != null) LocalDate.parse(offerEnd, DateTimeFormatter.ofPattern("dd/MM/yyyy")) else null
+                            product[updatedAt] = LocalDate.now()
+                        }
+                    }
                 }
             }
 
-            noteId++
-
-//            for (currentPage in 1..totalPages) {
-//                val doc = Jsoup.connect(
-//                    "https://www.tesco.com/groceries/en-GB/shop/fresh-food/all?page=$currentPage&count=48"
-//                ).get()
-//
-//                val productIds = doc.select(".csVOnh")
-//                    .select("a")
-//                    .eachAttr("href")
-//                    .map { it.substringAfter("/groceries/en-GB/products/") }
-//
-//                productIds.forEach { productId ->
-//                    println("Fetching productId: $productId")
-//                    val productDoc = Jsoup.connect(Constants.BASE_PRODUCT_URL.plus(productId)).get()
-//
-//                    val title = productDoc.select("h1").text().replace("Tesco ", "")
-//                    val cost = productDoc.select(".value")
-//                        .select("span")
-//                        .firstOrNull {
-//                            it.hasAttr("data-auto")
-//                        }
-//                        ?.text()
-//                    var discountPrice = productDoc.select(".promo-content-small .offer-text")
-//                        .first()
-//                        ?.text()
-//                        ?.substringBefore(" Clubcard")
-//                        ?.substringAfter("Any ")
-//
-//                    if (discountPrice != null && discountPrice.contains("p")) {
-//                        discountPrice = "0.".plus(discountPrice.substringBefore("p"))
-//                    }
-//
-//                    val offerPeriod = productDoc.select(".dates").first()?.text()
-//                    val offerStart = offerPeriod?.substringAfter("from ")?.substringBefore(" until")
-//                    val offerEnd = offerPeriod?.substringAfter("until ")
-//
-//                    DatabaseFactory.dbQuery {
-//                        Products.insert { product ->
-//                            product[productWebId] = productId
-//                            product[name] = title
-//                            product[price] = cost?.toFloat() ?: 0F
-//                            product[Products.discountPrice] = discountPrice
-//                            product[discountStartDate] = if (offerStart != null) LocalDate.parse(offerStart, DateTimeFormatter.ofPattern("dd/MM/yyyy")) else null
-//                            product[discountEndDate] = if (offerEnd != null) LocalDate.parse(offerEnd, DateTimeFormatter.ofPattern("dd/MM/yyyy")) else null
-//                            product[updatedAt] = LocalDate.now()
-//                        }
-//                    }
-//                }
-//            }
-
-            delay(1_000_000)
+            delay(80_000_000)
         }
     }
 }
