@@ -10,6 +10,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import org.jetbrains.exposed.sql.selectAll
+import java.time.LocalDate
 
 fun Application.configureRouting() {
 
@@ -22,11 +23,22 @@ fun Application.configureRouting() {
     routing {
         get("/search") {
             val name = call.request.queryParameters["name"]
+            val hasDiscount = call.request.queryParameters["hasDiscount"]
             if (!name.isNullOrBlank() && name.length > 2) {
                 val result = dbQuery {
                     Products.selectAll()
                         .map { rowToProduct(it) }
-                        .filter { it!!.name.lowercase().contains(name.lowercase()) }
+                        .filter { product ->
+                            if (product != null && hasDiscount.isNullOrBlank()) {
+                                product.name.lowercase().contains(name.lowercase())
+                            } else if (product != null && !hasDiscount.isNullOrBlank()) {
+                                product.name.lowercase().contains(name.lowercase()) &&
+                                        product.discountEndDate != null &&
+                                        product.discountEndDate.isBefore(LocalDate.now())
+                            } else {
+                                false
+                            }
+                        }
                 }
                 call.respond(result)
             } else if (!name.isNullOrBlank() && name.length < 3) {
@@ -39,6 +51,23 @@ fun Application.configureRouting() {
                     status = HttpStatusCode.BadRequest,
                     message = "Name cannot be blank"
                 )
+            }
+        }
+    }
+
+    routing {
+        get("/discount") {
+            val result = dbQuery {
+                Products.selectAll()
+                    .map { rowToProduct(it) }
+                    .filter { product ->
+                        product?.discountEndDate != null && product.discountEndDate.isBefore(LocalDate.now())
+                    }
+            }
+            if (result.isNotEmpty()) {
+                call.respond(result)
+            } else {
+                call.respond("There are no products on discount")
             }
         }
     }
